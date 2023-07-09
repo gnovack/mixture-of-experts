@@ -1,0 +1,8 @@
+accelerate
+transformers
+deepspeed
+tabulate
+datasets
+Pillow
+evaluate
+scikit-learn
