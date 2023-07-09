@@ -1,6 +1,6 @@
 import argparse
 import transformers
-from transformers import AutoTokenizer, OPTForCausalLM, OPTConfig, DataCollatorForLanguageModeling, TrainingArguments
+from transformers import AutoTokenizer, OPTForCausalLM, OPTConfig, TrainingArguments
 from transformers.training_args import TrainingArguments
 from trainer import TransformerTrainer
 from utils import human_readable, get_device, load_dataset
@@ -35,7 +35,7 @@ if __name__ == "__main__":
     tokenizer = AutoTokenizer.from_pretrained("facebook/opt-1.3b")
 
     print("Loading Training Dataset...")
-    train_dataset = load_dataset(tokenizer, max_length=sequence_length)
+    train_dataset = load_dataset(tokenizer, training_datasets=["wikitext"], max_length=sequence_length)
     
     parameter_count = get_parameter_count(model)
 
@@ -49,7 +49,7 @@ if __name__ == "__main__":
         per_device_train_batch_size=batch_size,
         gradient_accumulation_steps=gradient_accumulation_steps,
         learning_rate=1e-4,
-        weight_decay=0.01,
+        lr_scheduler_type=transformers.SchedulerType.COSINE,
         use_mps_device=get_device() == "mps",
         logging_steps=checkpoint_every,
         save_steps=checkpoint_every,

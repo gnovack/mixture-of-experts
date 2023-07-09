@@ -26,7 +26,7 @@ def load_dataset(tokenizer, training_datasets, max_length=None):
     train_dataset = wikitext["train"]
     
     train_dataset = train_dataset.map(lambda x: tokenizer(x["text"], max_length=max_length, padding='max_length', truncation=True, return_tensors='pt', return_special_tokens_mask=True), batched=True)
-    train_dataset.set_format(type="torch", columns=["input_ids", "attention_mask", "special_tokens_mask"])
+    train_dataset.set_format(type="torch", columns=["input_ids", "attention_mask"])
     train_dataset = train_dataset.map(lambda x: {
         "input_ids": x["input_ids"],
         "attention_mask": x["attention_mask"],
