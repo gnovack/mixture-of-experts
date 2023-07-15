@@ -16,7 +16,7 @@ class TransformerTrainer(Trainer):
             3  # backward is roughly 2x forward
         )
 
-        logs['tokens_seen'] = self.state.global_step * effective_batch_size * sequence_length
+        logs['tokens_seen'] = float(self.state.global_step * effective_batch_size * sequence_length)
         logs['flops'] = self.state.global_step * flops_per_step
         return super().log(logs)
 

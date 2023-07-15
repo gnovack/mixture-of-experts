@@ -22,15 +22,25 @@ def human_readable(number):
 
 def load_dataset(tokenizer, training_datasets, max_length=None):
 
-    wikitext = datasets.load_dataset("wikitext", "wikitext-2-v1")
-    train_dataset = wikitext["train"]
-    
-    train_dataset = train_dataset.map(lambda x: tokenizer(x["text"], max_length=max_length, padding='max_length', truncation=True, return_tensors='pt', return_special_tokens_mask=True), batched=True)
-    train_dataset.set_format(type="torch", columns=["input_ids", "attention_mask"])
-    train_dataset = train_dataset.map(lambda x: {
-        "input_ids": x["input_ids"],
-        "attention_mask": x["attention_mask"],
-        "labels": x["input_ids"]
-    })
+    supported_datasets = {
+        "wikitext": ("wikitext", "wikitext-2-v1"),
+        "openwebtext": ("openwebtext", "plain_text")
+    }
 
-    return train_dataset
+    def encode(batch):
+        return tokenizer(batch["text"], max_length=max_length, padding='max_length', truncation=True, return_tensors='pt')
+
+    _datasets = []
+    for ds in training_datasets:
+        if ds in supported_datasets:
+            name, variant = supported_datasets[ds]
+            d = datasets.load_dataset(name, variant, streaming=True)["train"]
+            d = d.map(encode, batched=True)
+            d = d.map(lambda x: {
+                "input_ids": x["input_ids"],
+                "attention_mask": x["attention_mask"],
+                "labels": x["input_ids"]
+            })
+            _datasets.append(d)
+
+    return datasets.interleave_datasets(_datasets)
