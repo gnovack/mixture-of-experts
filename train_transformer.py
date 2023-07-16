@@ -20,8 +20,8 @@ if __name__ == "__main__":
         sequence_length = 1024
         num_layers = 5
 
-    batch_size = 4
-    gradient_accumulation_steps = 16
+    batch_size = 42
+    gradient_accumulation_steps = 3
 
     model_config = OPTConfig(
         hidden_size=hidden_size,
@@ -34,7 +34,7 @@ if __name__ == "__main__":
     tokenizer = AutoTokenizer.from_pretrained("facebook/opt-1.3b")
 
     print("Loading Training Dataset...")
-    train_dataset = load_dataset(tokenizer, training_datasets=["wikitext", "openwebtext"], max_length=sequence_length)
+    train_dataset = load_dataset(tokenizer, training_datasets=["c4", "wikipedia", "openwebtext"], max_length=sequence_length)
     
     parameter_count = get_parameter_count(model)
 
@@ -44,7 +44,7 @@ if __name__ == "__main__":
     checkpoint_path = f"./checkpoints/dense-{args.model_size}"
 
     max_train_tokens = 1e9
-    max_train_steps = max_train_tokens // (batch_size * gradient_accumulation_steps * sequence_length)
+    max_train_steps = int(max_train_tokens // (batch_size * gradient_accumulation_steps * sequence_length))
     print(f"Training for {max_train_steps:,} steps")
 
     training_args = TrainingArguments(

@@ -23,8 +23,9 @@ def human_readable(number):
 def load_dataset(tokenizer, training_datasets, max_length=None):
 
     supported_datasets = {
-        "wikitext": ("wikitext", "wikitext-2-v1"),
-        "openwebtext": ("openwebtext", "plain_text")
+        "wikipedia": ("wikipedia", "20220301.en"),
+        "openwebtext": ("openwebtext", "plain_text"),
+        "c4": ("c4", "en")
     }
 
     def encode(batch):
